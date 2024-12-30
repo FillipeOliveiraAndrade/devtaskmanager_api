@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import br.com.fillipeoliveira.devtask_manager_api.modules.User.enums.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,10 +14,16 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "users")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
   
   @Id
@@ -25,7 +32,7 @@ public class User {
 
   private String name;
 
-  @Column
+  @Column(unique = true)
   private String email;
   
   private String password;
@@ -38,9 +45,4 @@ public class User {
 
   @CreationTimestamp
   private LocalDateTime createdAt;
-}
-
-enum Role {
-  ADMIN,
-  COLLABORATOR
 }
