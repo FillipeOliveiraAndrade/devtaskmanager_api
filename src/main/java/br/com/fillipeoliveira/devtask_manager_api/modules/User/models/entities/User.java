@@ -1,6 +1,7 @@
 package br.com.fillipeoliveira.devtask_manager_api.modules.User.models.entities;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -17,6 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -43,9 +45,14 @@ public class User {
   @Enumerated(EnumType.STRING)
   private Role role;
 
+  // Relacionamento com o projeto único para colaboradores
   @ManyToOne
-  @JoinColumn(name = "project_id", nullable = true)
-  private Project project;
+  @JoinColumn(name = "assigned_project_id", nullable = true)
+  private Project assignedProject;  // Nome claro indicando o projeto atribuído ao colaborador
+
+  // Relacionamento com os projetos que o administrador gerencia
+  @OneToMany(mappedBy = "admin")
+  private List<Project> managedProjects;  // Nome claro indicando projetos gerenciados pelo admin
 
   @UpdateTimestamp
   private LocalDateTime updatedAt;
