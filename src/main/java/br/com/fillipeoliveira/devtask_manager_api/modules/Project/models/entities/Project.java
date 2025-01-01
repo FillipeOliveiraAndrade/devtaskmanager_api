@@ -13,7 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 @Entity(name = "project")
@@ -28,7 +28,7 @@ public class Project {
   private String description;
   private LocalDate dueDate;
 
-  @OneToOne
+  @ManyToOne
   @JoinColumn(name = "admin_id")
   private User admin;
 
