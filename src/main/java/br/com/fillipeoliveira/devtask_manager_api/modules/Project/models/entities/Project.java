@@ -14,10 +14,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.Builder;
 import lombok.Data;
 
 @Entity(name = "project")
 @Data
+@Builder
 public class Project {
   
   @Id
