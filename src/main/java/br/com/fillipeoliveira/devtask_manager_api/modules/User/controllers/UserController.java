@@ -1,10 +1,14 @@
 package br.com.fillipeoliveira.devtask_manager_api.modules.User.controllers;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +22,7 @@ import br.com.fillipeoliveira.devtask_manager_api.modules.User.dtos.CreateUserDT
 import br.com.fillipeoliveira.devtask_manager_api.modules.User.dtos.UserResponseDTO;
 import br.com.fillipeoliveira.devtask_manager_api.modules.User.models.entities.User;
 import br.com.fillipeoliveira.devtask_manager_api.modules.User.services.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/users")
@@ -36,11 +41,28 @@ public class UserController {
   }
 
   @PostMapping("/projects")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<ProjectResponseDTO> createProduct(
-    @RequestBody CreateProjectDTO createProjectDTO
+    @RequestBody CreateProjectDTO createProjectDTO,
+    HttpServletRequest request 
   ) {
-    // TODO: Change to get the logged-in user's id
-    Project result = this.projectService.save(createProjectDTO.toEntity(), UUID.fromString("62be4a4f-a5c0-40ee-b29e-24efd9a9fa11"));
+    
+    var userId = request.getAttribute("user_id");
+    Project result = this.projectService.save(createProjectDTO.toEntity(), UUID.fromString(userId.toString()));
     return ResponseEntity.status(HttpStatus.CREATED).body(ProjectResponseDTO.fromEntity(result));
+  }
+
+  @GetMapping("/{userId}/projects")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<List<ProjectResponseDTO>> findAllByUserId(
+    @PathVariable UUID userId
+  ) {
+
+    List<Project> projects = this.projectService.findAllByUserId(userId);
+    List<ProjectResponseDTO> projectsDTO = projects.stream().map(
+      ProjectResponseDTO::fromEntity
+    ).toList();
+
+    return ResponseEntity.status(HttpStatus.OK).body(projectsDTO);
   }
 }

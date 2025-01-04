@@ -1,10 +1,12 @@
 package br.com.fillipeoliveira.devtask_manager_api.modules.Project.services;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.fillipeoliveira.devtask_manager_api.modules.Project.exceptions.ProjectNotFoundException;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Project.models.entities.Project;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Project.models.repositories.ProjectRepository;
 import br.com.fillipeoliveira.devtask_manager_api.modules.User.exceptions.UserNotFoundException;
@@ -27,5 +29,21 @@ public class ProjectService {
 
     project.setAdmin(user);
     return this.projectRepository.save(project);
+  }
+
+  public List<Project> findAllByUserId(UUID userId) {
+    this.userRepository.findById(userId).orElseThrow(
+      () -> new UserNotFoundException()
+    );
+
+    return this.projectRepository.findByAdminId(userId);
+  } 
+
+  public void delete(UUID projectId) {
+    this.projectRepository.findById(projectId).orElseThrow(
+      () -> new ProjectNotFoundException()
+    );
+
+    this.projectRepository.deleteById(projectId);
   }
 }

@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import br.com.fillipeoliveira.devtask_manager_api.modules.Project.exceptions.ProjectNotFoundException;
 import br.com.fillipeoliveira.devtask_manager_api.modules.User.exceptions.EmailAlreadyExistsException;
 import br.com.fillipeoliveira.devtask_manager_api.modules.User.exceptions.InvalidCredentialsException;
 import br.com.fillipeoliveira.devtask_manager_api.modules.User.exceptions.UserNotFoundException;
@@ -14,6 +15,7 @@ public class GlobalControllerAdvice {
   @ExceptionHandler({
     UserNotFoundException.class,
     EmailAlreadyExistsException.class,
+    ProjectNotFoundException.class,
     InvalidCredentialsException.class
   })
   public ResponseEntity<ErrorMessageDTO> handleBadRequestException(RuntimeException exception) {

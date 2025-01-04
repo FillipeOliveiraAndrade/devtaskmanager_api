@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 
 import br.com.fillipeoliveira.devtask_manager_api.modules.User.models.entities.User;
 
@@ -34,4 +36,19 @@ public class TokenService {
       throw new RuntimeException("Error while creating token");
     }
   }
+
+  public DecodedJWT validateToken(String token) {
+    token = token.replace("Bearer ", "");
+
+    try {
+      Algorithm algorithm = Algorithm.HMAC256(secret);
+      return JWT.require(algorithm)
+          .build()
+          .verify(token);
+    } catch (JWTVerificationException e) {
+      throw new RuntimeException("Invalid token");
+    }
+
+  }
+
 }
