@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -64,5 +66,22 @@ public class UserController {
     ).toList();
 
     return ResponseEntity.status(HttpStatus.OK).body(projectsDTO);
+  }
+
+  @PutMapping("/{projectId}/projects")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<ProjectResponseDTO> update(
+      @PathVariable UUID projectId,
+      @RequestBody Project project
+  ) {
+    Project updatedProject = this.projectService.update(projectId, project);
+    return ResponseEntity.status(HttpStatus.OK).body(ProjectResponseDTO.fromEntity(updatedProject));
+  }
+
+  @DeleteMapping("/{projectId}/projects")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<Void> deleteById(@PathVariable UUID projectId) {
+    this.projectService.delete(projectId);
+    return ResponseEntity.noContent().build();
   }
 }

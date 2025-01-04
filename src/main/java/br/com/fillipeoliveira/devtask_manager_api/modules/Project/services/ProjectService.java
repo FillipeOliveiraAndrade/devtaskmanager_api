@@ -2,6 +2,7 @@ package br.com.fillipeoliveira.devtask_manager_api.modules.Project.services;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,11 +48,29 @@ public class ProjectService {
     return project;
   }
   
+  public Project update(UUID projectId, Project project) {
+    Project existingProject = this.projectRepository.findById(projectId).orElseThrow(
+      () -> new ProjectNotFoundException()
+    );
+
+    updateFieldIfNotNull(project.getName(), existingProject::setName);
+    updateFieldIfNotNull(project.getDescription(), existingProject::setDescription);
+    updateFieldIfNotNull(project.getDueDate(), existingProject::setDueDate);
+
+    return this.projectRepository.save(existingProject);
+  }   
+
   public void delete(UUID projectId) {
     this.projectRepository.findById(projectId).orElseThrow(
       () -> new ProjectNotFoundException()
     );
 
     this.projectRepository.deleteById(projectId);
+  }
+
+  private <T> void updateFieldIfNotNull(T newValue, Consumer<T> setter) {
+    if (newValue != null) {
+      setter.accept(newValue);
+    }
   }
 }
