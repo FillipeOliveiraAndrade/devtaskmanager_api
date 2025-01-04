@@ -39,6 +39,14 @@ public class ProjectService {
     return this.projectRepository.findByAdminId(userId);
   } 
 
+  public Project findById(UUID projectId) {
+    Project project = this.projectRepository.findById(projectId).orElseThrow(
+      () -> new ProjectNotFoundException()
+    );
+
+    return project;
+  }
+  
   public void delete(UUID projectId) {
     this.projectRepository.findById(projectId).orElseThrow(
       () -> new ProjectNotFoundException()
