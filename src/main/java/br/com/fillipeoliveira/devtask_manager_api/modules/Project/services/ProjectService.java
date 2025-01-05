@@ -16,7 +16,7 @@ import br.com.fillipeoliveira.devtask_manager_api.modules.User.models.repositori
 
 @Service
 public class ProjectService {
-  
+
   @Autowired
   private ProjectRepository projectRepository;
 
@@ -25,45 +25,52 @@ public class ProjectService {
 
   public Project save(Project project, UUID userId) {
     User user = this.userRepository.findById(userId).orElseThrow(
-      () -> new UserNotFoundException()
-    );
+        () -> new UserNotFoundException());
 
     project.setAdmin(user);
     return this.projectRepository.save(project);
   }
 
+  public User addCollaborator(String userEmail, UUID projectId) {
+    User user = this.userRepository.findByEmail(userEmail).orElseThrow(
+        () -> new UserNotFoundException());
+
+    Project project = this.projectRepository.findById(projectId).orElseThrow(
+        () -> new ProjectNotFoundException());
+
+    user.setAssignedProject(project);
+
+    return this.userRepository.save(user);
+  }
+
   public List<Project> findAllByUserId(UUID userId) {
     this.userRepository.findById(userId).orElseThrow(
-      () -> new UserNotFoundException()
-    );
+        () -> new UserNotFoundException());
 
     return this.projectRepository.findByAdminId(userId);
-  } 
+  }
 
   public Project findById(UUID projectId) {
     Project project = this.projectRepository.findById(projectId).orElseThrow(
-      () -> new ProjectNotFoundException()
-    );
+        () -> new ProjectNotFoundException());
 
     return project;
   }
-  
+
   public Project update(UUID projectId, Project project) {
     Project existingProject = this.projectRepository.findById(projectId).orElseThrow(
-      () -> new ProjectNotFoundException()
-    );
+        () -> new ProjectNotFoundException());
 
     updateFieldIfNotNull(project.getName(), existingProject::setName);
     updateFieldIfNotNull(project.getDescription(), existingProject::setDescription);
     updateFieldIfNotNull(project.getDueDate(), existingProject::setDueDate);
 
     return this.projectRepository.save(existingProject);
-  }   
+  }
 
   public void delete(UUID projectId) {
     this.projectRepository.findById(projectId).orElseThrow(
-      () -> new ProjectNotFoundException()
-    );
+        () -> new ProjectNotFoundException());
 
     this.projectRepository.deleteById(projectId);
   }

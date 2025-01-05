@@ -20,6 +20,7 @@ import br.com.fillipeoliveira.devtask_manager_api.modules.Project.dtos.CreatePro
 import br.com.fillipeoliveira.devtask_manager_api.modules.Project.dtos.ProjectResponseDTO;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Project.models.entities.Project;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Project.services.ProjectService;
+import br.com.fillipeoliveira.devtask_manager_api.modules.User.dtos.AddCollaboratorDTO;
 import br.com.fillipeoliveira.devtask_manager_api.modules.User.dtos.CreateUserDTO;
 import br.com.fillipeoliveira.devtask_manager_api.modules.User.dtos.UserResponseDTO;
 import br.com.fillipeoliveira.devtask_manager_api.modules.User.models.entities.User;
@@ -52,6 +53,22 @@ public class UserController {
     var userId = request.getAttribute("user_id");
     Project result = this.projectService.save(createProjectDTO.toEntity(), UUID.fromString(userId.toString()));
     return ResponseEntity.status(HttpStatus.CREATED).body(ProjectResponseDTO.fromEntity(result));
+  }
+
+  @PostMapping("/projects/collaborator")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<UserResponseDTO> addCollaborator(
+      @RequestBody AddCollaboratorDTO addCollaboratorDTO
+  ) {
+
+    System.out.println(addCollaboratorDTO);
+
+    User user = this.userService.addCollaborator(
+        addCollaboratorDTO.userEmail(),
+        addCollaboratorDTO.projectId()
+    );
+
+    return ResponseEntity.status(HttpStatus.OK).body(UserResponseDTO.fromEntity(user));
   }
 
   @GetMapping("/{userId}/projects")
