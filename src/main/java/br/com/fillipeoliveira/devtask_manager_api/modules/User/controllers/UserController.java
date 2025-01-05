@@ -63,7 +63,7 @@ public class UserController {
 
     System.out.println(addCollaboratorDTO);
 
-    User user = this.userService.addCollaborator(
+    User user = this.projectService.addCollaborator(
         addCollaboratorDTO.userEmail(),
         addCollaboratorDTO.projectId()
     );
