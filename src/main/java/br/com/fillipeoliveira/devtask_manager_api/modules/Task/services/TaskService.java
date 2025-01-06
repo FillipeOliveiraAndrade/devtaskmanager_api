@@ -9,6 +9,7 @@ import br.com.fillipeoliveira.devtask_manager_api.modules.Project.exceptions.Pro
 import br.com.fillipeoliveira.devtask_manager_api.modules.Project.models.entities.Project;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Project.models.repositories.ProjectRepository;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Task.exceptions.TaskAlreadyExistsException;
+import br.com.fillipeoliveira.devtask_manager_api.modules.Task.exceptions.TaskNotFoundException;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Task.models.entities.Task;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Task.models.repositories.TaskRepository;
 
@@ -35,5 +36,13 @@ public class TaskService {
     task.setProject(project);
   
     return this.taskRepository.save(task);
+  }
+
+  public void delete(UUID taskId) {
+    this.taskRepository.findById(taskId).orElseThrow(
+      () -> new TaskNotFoundException()
+    );
+
+    this.taskRepository.deleteById(taskId);
   }
 }

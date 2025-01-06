@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +31,7 @@ public class ProjectController {
   @Autowired
   private TaskService taskService;
 
+  // Refatorar as rotas das tasks
   @PostMapping("/{projectId}/tasks")
   public ResponseEntity<TaskResponseDTO> createTask(
       @PathVariable UUID projectId,
@@ -38,6 +40,12 @@ public class ProjectController {
 
     Task task = this.taskService.save(projectId, createTaskDTO.toEntity());
     return ResponseEntity.status(HttpStatus.CREATED).body(TaskResponseDTO.fromEntity(task));
+  }
+
+  @DeleteMapping("/{taskId}/tasks")
+  public ResponseEntity<Void> deleteTaskById(@PathVariable UUID taskId) {
+    this.taskService.delete(taskId);
+    return ResponseEntity.noContent().build();
   }
   
   @GetMapping("/{projectId}")
