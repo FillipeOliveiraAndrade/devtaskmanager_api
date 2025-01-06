@@ -6,6 +6,8 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import br.com.fillipeoliveira.devtask_manager_api.modules.Project.models.entities.Project;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Task.enums.Status;
 import jakarta.persistence.Entity;
@@ -16,10 +18,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "task")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Task {
   
   @Id
@@ -33,7 +41,8 @@ public class Task {
   private Status status;
   
   @ManyToOne
-  @JoinColumn(name = "project_id")
+  @JoinColumn(name = "project_id", nullable = false)
+  @JsonIgnore
   private Project project;
 
   @UpdateTimestamp
