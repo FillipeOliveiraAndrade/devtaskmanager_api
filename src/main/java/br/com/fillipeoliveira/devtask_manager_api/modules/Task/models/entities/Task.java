@@ -1,6 +1,10 @@
 package br.com.fillipeoliveira.devtask_manager_api.modules.Task.models.entities;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import br.com.fillipeoliveira.devtask_manager_api.modules.Project.models.entities.Project;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Task.enums.Status;
@@ -31,4 +35,10 @@ public class Task {
   @ManyToOne
   @JoinColumn(name = "project_id")
   private Project project;
+
+  @UpdateTimestamp
+  private LocalDateTime updatedAt;
+
+  @CreationTimestamp
+  private LocalDateTime createdAt; 
 }
