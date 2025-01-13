@@ -10,25 +10,19 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import br.com.fillipeoliveira.devtask_manager_api.modules.Task.models.entities.Task;
 import br.com.fillipeoliveira.devtask_manager_api.modules.User.models.entities.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "project")
+@Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Project {
-  
+
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
@@ -41,8 +35,11 @@ public class Project {
   @JoinColumn(name = "admin_id")
   private User admin;
 
-  @OneToMany(mappedBy = "project")
+  @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Task> tasks;
+
+  @OneToMany(mappedBy = "assignedProject")
+  private List<User> collaborators;
 
   @UpdateTimestamp
   private LocalDateTime updatedAt;

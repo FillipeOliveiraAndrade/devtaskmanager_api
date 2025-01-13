@@ -4,6 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import br.com.fillipeoliveira.devtask_manager_api.modules.Comment.exceptions.CommentAlreadyExistsException;
+import br.com.fillipeoliveira.devtask_manager_api.modules.Project.exceptions.ProjectAlreadyExistsException;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Project.exceptions.ProjectNotFoundException;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Task.exceptions.TaskAlreadyExistsException;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Task.exceptions.TaskNotFoundException;
@@ -18,7 +20,9 @@ public class GlobalControllerAdvice {
     UserNotFoundException.class,
     EmailAlreadyExistsException.class,
     ProjectNotFoundException.class,
+    ProjectAlreadyExistsException.class,
     TaskAlreadyExistsException.class,
+    CommentAlreadyExistsException.class,
     TaskNotFoundException.class,
     InvalidCredentialsException.class
   })

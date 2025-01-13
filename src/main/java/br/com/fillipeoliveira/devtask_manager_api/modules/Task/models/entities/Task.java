@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Comment.models.entities.Comment;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Project.models.entities.Project;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Task.enums.Status;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -48,8 +49,7 @@ public class Task {
   @JsonIgnore
   private Project project;
 
-  @OneToMany(mappedBy = "task")
-  @JsonIgnore
+  @OneToMany(mappedBy = "task", cascade = CascadeType.REMOVE, orphanRemoval = true)
   private List<Comment> comments;
 
   @UpdateTimestamp

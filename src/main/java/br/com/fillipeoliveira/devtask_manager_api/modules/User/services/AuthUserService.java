@@ -34,7 +34,6 @@ public class AuthUserService {
     }
   
     String token = this.tokenService.generateToken(user);
-
     AuthUserResponseDTO tokenDTO = AuthUserResponseDTO.builder()
         .user(UserResponseDTO.fromEntity(user))
         .token(token)

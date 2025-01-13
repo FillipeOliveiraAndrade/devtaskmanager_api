@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class SecurityUserFilter extends OncePerRequestFilter {
-  
+
   @Autowired
   private TokenService tokenService;
 
@@ -29,31 +29,29 @@ public class SecurityUserFilter extends OncePerRequestFilter {
       @NonNull HttpServletRequest request,
       @NonNull HttpServletResponse response,
       @NonNull FilterChain filterChain) throws ServletException, IOException {
-    
+
     String header = request.getHeader("Authorization");
 
-    if (request.getRequestURI().startsWith("/users")) {
-      if (header != null) {
+    if (header != null) {
 
-        DecodedJWT token = this.tokenService.validateToken(header);
+      DecodedJWT token = this.tokenService.validateToken(header);
 
-        if (token == null) {
-          response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-          return;
-        }
-
-        request.setAttribute("user_id", token.getSubject());
-        var roles = token.getClaim("roles").asList(String.class);
-
-        var grants = roles.stream()
-            .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toString().toUpperCase()))
-            .toList();
-
-        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(token.getSubject(),
-            null, grants);
-
-        SecurityContextHolder.getContext().setAuthentication(auth);
+      if (token == null) {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        return;
       }
+
+      request.setAttribute("user_id", token.getSubject());
+      var roles = token.getClaim("roles").asList(String.class);
+
+      var grants = roles.stream()
+          .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toString().toUpperCase()))
+          .toList();
+
+      UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(token.getSubject(),
+          null, grants);
+
+      SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
     filterChain.doFilter(request, response);

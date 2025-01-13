@@ -7,6 +7,8 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import br.com.fillipeoliveira.devtask_manager_api.modules.Project.models.entities.Project;
 import br.com.fillipeoliveira.devtask_manager_api.modules.User.enums.Role;
 import jakarta.persistence.Column;
@@ -17,6 +19,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -30,7 +33,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-  
+
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
@@ -39,20 +42,22 @@ public class User {
 
   @Column(unique = true)
   private String email;
-  
+
   private String password;
 
   @Enumerated(EnumType.STRING)
   private Role role;
 
-  // Relacionamento com o projeto único para colaboradores
+  @Lob
+  @JsonIgnore
+  private byte[] avatar;
+
   @ManyToOne
   @JoinColumn(name = "assigned_project_id", nullable = true)
-  private Project assignedProject;  // Nome claro indicando o projeto atribuído ao colaborador
+  private Project assignedProject;
 
-  // Relacionamento com os projetos que o administrador gerencia
   @OneToMany(mappedBy = "admin")
-  private List<Project> managedProjects;  // Nome claro indicando projetos gerenciados pelo admin
+  private List<Project> managedProjects;
 
   @UpdateTimestamp
   private LocalDateTime updatedAt;

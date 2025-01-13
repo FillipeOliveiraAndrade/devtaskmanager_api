@@ -5,36 +5,56 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
-import br.com.fillipeoliveira.devtask_manager_api.modules.Project.dtos.ProjectResponseDTO;
+import br.com.fillipeoliveira.devtask_manager_api.modules.Project.dtos.*;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Project.models.entities.Project;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Project.services.ProjectService;
-import br.com.fillipeoliveira.devtask_manager_api.modules.Task.dtos.CreateTaskDTO;
-import br.com.fillipeoliveira.devtask_manager_api.modules.Task.dtos.TaskResponseDTO;
+import br.com.fillipeoliveira.devtask_manager_api.modules.Task.dtos.*;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Task.models.entities.Task;
 import br.com.fillipeoliveira.devtask_manager_api.modules.Task.services.TaskService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/projects")
 public class ProjectController {
-  
+
   @Autowired
   private ProjectService projectService;
 
   @Autowired
   private TaskService taskService;
 
-  // Refatorar as rotas das tasks
+  @PostMapping
+  @PreAuthorize("hasRole('ADMIN')")
+  @Operation(summary = "Criar um projeto", description = "Cria um novo projeto associado a um usuário.")
+  public ResponseEntity<ProjectResponseDTO> createProject(
+      @RequestBody CreateProjectDTO createProjectDTO,
+      HttpServletRequest request
+  ) {
+
+    var userId = request.getAttribute("user_id");
+    Project result = this.projectService.save(createProjectDTO.toEntity(), UUID.fromString(userId.toString()));
+    return ResponseEntity.status(HttpStatus.CREATED).body(ProjectResponseDTO.fromEntity(result));
+  }
+
+  @GetMapping("/{projectId}")
+  @Operation(summary = "Obter detalhes do projeto", description = "Retorna os detalhes completos de um projeto pelo ID.")
+  public ResponseEntity<ProjectResponseDTO> findById(
+      @Parameter(description = "ID do projeto", required = true) @PathVariable UUID projectId
+  ) {
+
+    Project project = this.projectService.findById(projectId);
+    return ResponseEntity.status(HttpStatus.OK).body(ProjectResponseDTO.fromEntity(project));
+  }
+
   @PostMapping("/{projectId}/tasks")
+  @Operation(summary = "Criar uma tarefa", description = "Cria uma nova tarefa associada a um projeto.")
   public ResponseEntity<TaskResponseDTO> createTask(
-      @PathVariable UUID projectId,
+      @Parameter(description = "ID do projeto", required = true) @PathVariable UUID projectId,
       @RequestBody CreateTaskDTO createTaskDTO
   ) {
 
@@ -43,15 +63,23 @@ public class ProjectController {
   }
 
   @DeleteMapping("/{taskId}/tasks")
-  public ResponseEntity<Void> deleteTaskById(@PathVariable UUID taskId) {
+  @Operation(summary = "Excluir uma tarefa", description = "Exclui uma tarefa com base no ID.")
+  public ResponseEntity<Void> deleteTaskById(
+      @Parameter(description = "ID da tarefa", required = true) @PathVariable UUID taskId    
+  ) {
+
     this.taskService.delete(taskId);
     return ResponseEntity.noContent().build();
   }
-  
-  @GetMapping("/{projectId}")
-  public ResponseEntity<ProjectResponseDTO> findById(@PathVariable UUID projectId) {
-    Project project = this.projectService.findById(projectId);
-    return ResponseEntity.status(HttpStatus.OK).body(ProjectResponseDTO.fromEntity(project));
-  }
 
+  @DeleteMapping("/{projectId}")
+  @PreAuthorize("hasRole('ADMIN')")
+  @Operation(summary = "Excluir um projeto", description = "Exclui um projeto pelo ID fornecido.")
+  public ResponseEntity<Void> deleteProjectById(
+      @Parameter(description = "ID do projeto", required = true) @PathVariable UUID projectId
+  ) {
+
+    this.projectService.delete(projectId);
+    return ResponseEntity.noContent().build();
+  }
 }

@@ -6,6 +6,8 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import br.com.fillipeoliveira.devtask_manager_api.modules.Task.models.entities.Task;
 import br.com.fillipeoliveira.devtask_manager_api.modules.User.models.entities.User;
 import jakarta.persistence.Entity;
@@ -14,10 +16,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
 @Entity(name = "comment")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Comment {
 
   @Id
@@ -28,10 +36,12 @@ public class Comment {
 
   @ManyToOne
   @JoinColumn(name = "task_id")
+  @JsonIgnore
   private Task task;
 
   @ManyToOne
   @JoinColumn(name = "user_id")
+  @JsonIgnore
   private User user;
 
   @CreationTimestamp

@@ -1,26 +1,22 @@
 package br.com.fillipeoliveira.devtask_manager_api.modules.User.dtos;
 
-import br.com.fillipeoliveira.devtask_manager_api.modules.User.enums.Role;
 import br.com.fillipeoliveira.devtask_manager_api.modules.User.models.entities.User;
 
-public record CreateUserDTO(
+public record UpdateUserDTO(
   String name,
-  String email,
-  String password,
-  Role role
+  String email
 ) {
   
   /**
    * Converte o DTO para a entidade User.
    * 
    * @return A entidade User com os dados do DTO
+   * @throws IllegalArgumentException Se os dados do DTO forem inválidos
    */
   public User toEntity() {
     return User.builder()
-      .name(this.name())
-      .email(this.email())
-      .password(this.password())
-      .role(this.role())
-      .build();
+        .name(this.name())
+        .email(this.email())
+        .build();
   }
 }

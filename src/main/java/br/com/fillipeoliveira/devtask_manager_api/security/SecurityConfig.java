@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,7 +26,7 @@ public class SecurityConfig {
   private static final String[] PERMIT_ALL_LIST = {
       "/swagger-ui/**",
       "/v3/api-docs/**",
-      "/swagger-resource/**",
+      "/swagger-resources/**",
       "/actuator/**"
   };
 
@@ -37,7 +38,9 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> {
           auth.requestMatchers("/users").permitAll()
               .requestMatchers("/auth/users").permitAll()
+              .requestMatchers("/users/image/**").permitAll()
               .requestMatchers("/projects/**").permitAll() // Remover essa linha
+              .requestMatchers(HttpMethod.GET, "/users/**").permitAll() // Remover essa linha
               .requestMatchers(PERMIT_ALL_LIST).permitAll();
           auth.anyRequest().authenticated();
         })
